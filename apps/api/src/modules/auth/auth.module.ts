@@ -19,6 +19,7 @@ import { UsersModule } from "../users/users.module";
 
 import { INJECTION_TOKENS } from "../../core/constants/injection-tokens";
 import { ConfigService } from "@nestjs/config";
+import { LoginUseCase } from "./application/use-cases/login.use-case";
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { ConfigService } from "@nestjs/config";
 
   providers: [
     RegisterUseCase,
-
+    LoginUseCase,
     JwtStrategy,
 
     {
