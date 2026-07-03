@@ -65,7 +65,9 @@ export const login = createAsyncThunk(
     try {
       return await loginUser(data);
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message ?? "Login failed");
+      return rejectWithValue(
+        error.response?.data?.message ?? "Login Invalid email or password.",
+      );
     }
   },
 );

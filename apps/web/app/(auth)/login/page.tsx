@@ -1,58 +1,82 @@
-"use client"
+"use client";
 
-import { Suspense } from "react"
-import Link from "next/link"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense } from "react";
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import { loginSchema, type LoginFormData } from "@/lib/validations/auth"
-import { useAppDispatch } from "@/hooks/use-app-dispatch"
-import { setUser } from "@/store/slices/auth.slice"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { FormField } from "@/components/ui/form-field"
+import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { login as loginAction } from "@/store/slices/auth.slice";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { FormField } from "@/components/ui/form-field";
 
 // Isolated in its own component so useSearchParams can be wrapped in Suspense
 function LoginForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const dispatch = useAppDispatch()
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [authError, setAuthError] = useState<string | null>(null)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) })
-
-  const MOCK_USER = { email: "demo@taskflow.io", password: "Demo1234" }
+  } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
-    setAuthError(null)
-    await new Promise((r) => setTimeout(r, 1000))
+    try {
+      setIsLoading(true);
+      setAuthError(null);
 
-    // TODO: replace with real API call — set httpOnly cookie server-side
-    if (data.email !== MOCK_USER.email || data.password !== MOCK_USER.password) {
-      setAuthError("Invalid email or password.")
-      setIsLoading(false)
-      return
+      const result = await dispatch(
+        loginAction({
+          email: data.email,
+          password: data.password,
+        }),
+      );
+
+      if (loginAction.fulfilled.match(result)) {
+        document.cookie = `taskflow-token=${result.payload.accessToken}; path=/; max-age=86400; SameSite=Lax`;
+        console.log(document.cookie);
+
+        router.push(searchParams.get("from") ?? "/dashboard");
+      }
+
+      if (loginAction.rejected.match(result)) {
+        setAuthError(
+          typeof result.payload === "string"
+            ? result.payload
+            : "Invalid email or password.",
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      setAuthError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-
-    dispatch(setUser({ name: "Demo User", email: data.email }))
-    document.cookie = "taskflow-token=mock-token; path=/; max-age=86400; SameSite=Lax"
-    router.push(searchParams.get("from") ?? "/dashboard")
-  }
+  };
 
   return (
     <div className="rounded-2xl border border-border bg-surface-0 p-6 shadow-xs">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
-        <FormField label="Email" htmlFor="email" error={errors.email?.message} required>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+        noValidate
+      >
+        <FormField
+          label="Email"
+          htmlFor="email"
+          error={errors.email?.message}
+          required
+        >
           <Input
             id="email"
             type="email"
@@ -64,7 +88,12 @@ function LoginForm() {
           />
         </FormField>
 
-        <FormField label="Password" htmlFor="password" error={errors.password?.message} required>
+        <FormField
+          label="Password"
+          htmlFor="password"
+          error={errors.password?.message}
+          required
+        >
           <div className="relative">
             <Input
               id="password"
@@ -82,37 +111,58 @@ function LoginForm() {
               tabIndex={-1}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              {showPassword ? (
+                <EyeOff className="size-4" />
+              ) : (
+                <Eye className="size-4" />
+              )}
             </button>
           </div>
         </FormField>
 
         <div className="flex items-center justify-between">
           <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
-            <input type="checkbox" className="size-3.5 rounded border-border accent-primary" />
+            <input
+              type="checkbox"
+              className="size-3.5 rounded border-border accent-primary"
+            />
             Remember me
           </label>
-          <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
             Forgot password?
           </Link>
         </div>
 
         {authError && (
-          <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          <p
+            className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            role="alert"
+          >
             {authError}
           </p>
         )}
 
-        <Button type="submit" size="lg" className="mt-1 w-full" disabled={isLoading}>
+        <Button
+          type="submit"
+          size="lg"
+          className="mt-1 w-full"
+          disabled={isLoading}
+        >
           {isLoading ? (
-            <><Loader2 className="animate-spin" />Signing in…</>
+            <>
+              <Loader2 className="animate-spin" />
+              Signing in…
+            </>
           ) : (
             "Sign in"
           )}
         </Button>
       </form>
     </div>
-  )
+  );
 }
 
 export default function LoginPage() {
@@ -122,8 +172,12 @@ export default function LoginPage() {
         <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary shadow-md">
           <span className="text-lg font-bold text-primary-foreground">T</span>
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Welcome back</h1>
-        <p className="mt-1.5 text-sm text-muted-foreground">Sign in to your TaskFlow account</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Welcome back
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          Sign in to your TaskFlow account
+        </p>
       </div>
 
       <Suspense>
@@ -132,10 +186,13 @@ export default function LoginPage() {
 
       <p className="mt-5 text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-medium text-primary hover:underline">
+        <Link
+          href="/register"
+          className="font-medium text-primary hover:underline"
+        >
           Create one
         </Link>
       </p>
     </div>
-  )
+  );
 }
