@@ -1,17 +1,17 @@
-import { Users, CalendarDays, MoreHorizontal } from "lucide-react"
+import { Users, CalendarDays, MoreHorizontal } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { PROJECT_STATUS } from "@/lib/design-tokens"
-import { formatDueDate } from "@/lib/utils/date"
-import { getInitials } from "@/store/slices/auth.slice"
-import type { ProjectWithMeta } from "@/lib/mock/projects"
-import type { ProjectStatus } from "@/types/project"
+import { cn } from "@/lib/utils";
+import { PROJECT_STATUS } from "@/lib/design-tokens";
+import { formatDueDate } from "@/lib/utils/date";
+import { getInitials } from "@/store/slices/auth.slice";
+import type { ProjectWithMeta } from "@/lib/mock/projects";
+import type { ProjectStatus } from "@/types/project";
 
 // ─── ProgressBar ──────────────────────────────────────────────────────────────
 
 function ProgressBar({ done, total }: { done: number; total: number }) {
-  const pct = total === 0 ? 0 : Math.round((done / total) * 100)
-  const isComplete = pct === 100
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+  const isComplete = pct === 100;
 
   return (
     <div className="flex items-center gap-2">
@@ -28,9 +28,11 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
           aria-valuemax={100}
         />
       </div>
-      <span className="w-7 text-right text-xs text-muted-foreground">{pct}%</span>
+      <span className="w-7 text-right text-xs text-muted-foreground">
+        {pct}%
+      </span>
     </div>
-  )
+  );
 }
 
 // ─── MemberAvatarStack ────────────────────────────────────────────────────────
@@ -38,11 +40,11 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
 function MemberAvatarStack({
   members,
 }: {
-  members: ProjectWithMeta["members"]
+  members: ProjectWithMeta["members"];
 }) {
-  const MAX_VISIBLE = 3
-  const visible = members.slice(0, MAX_VISIBLE)
-  const extra = members.length - MAX_VISIBLE
+  const MAX_VISIBLE = 3;
+  const visible = members.slice(0, MAX_VISIBLE);
+  const extra = members.length - MAX_VISIBLE;
 
   return (
     <div className="flex -space-x-1.5">
@@ -61,18 +63,19 @@ function MemberAvatarStack({
         </span>
       )}
     </div>
-  )
+  );
 }
 
 // ─── ProjectCard ──────────────────────────────────────────────────────────────
 
 interface ProjectCardProps {
-  project: ProjectWithMeta
+  project: ProjectWithMeta;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const statusToken = PROJECT_STATUS[project.status as ProjectStatus]
-  const isInactive = project.status === "archived" || project.status === "completed"
+  const statusToken = PROJECT_STATUS[project.status as ProjectStatus];
+  const isInactive =
+    project.status === "archived" || project.status === "completed";
 
   return (
     <article className="group flex flex-col gap-4 rounded-xl border border-border bg-surface-0 p-5 shadow-xs transition-colors hover:border-primary/30">
@@ -151,5 +154,5 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
     </article>
-  )
+  );
 }

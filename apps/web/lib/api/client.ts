@@ -1,11 +1,22 @@
-// Shared axios instance.
-
 import axios from "axios";
 
-export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+export const api = axios.create({
+  baseURL: "http://localhost:4000/api",
+});
 
-  headers: {
-    "Content-Type": "application/json",
-  },
+api.interceptors.request.use((config) => {
+  const token = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("taskflow-token="))
+    ?.split("=")[1];
+
+  console.log("COOKIE TOKEN:", token);
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  console.log("AUTH HEADER:", config.headers.Authorization);
+
+  return config;
 });

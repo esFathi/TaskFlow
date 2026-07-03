@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { Search, Bell, Sun, Moon, Monitor } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useAppDispatch, useAppSelector } from "@/hooks/use-app-dispatch"
-import { setTheme } from "@/store/slices/ui.slice"
-import { getInitials } from "@/store/slices/auth.slice"
-import { Breadcrumbs } from "./breadcrumbs"
+import { Search, Bell, Sun, Moon, Monitor } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useAppDispatch, useAppSelector } from "@/hooks/use-app-dispatch";
+import { setTheme } from "@/store/slices/ui.slice";
+import { getInitials } from "@/store/slices/auth.slice";
+import { Breadcrumbs } from "./breadcrumbs";
 
 const THEME_ICONS = {
-  light:  <Sun className="size-3.5" />,
-  dark:   <Moon className="size-3.5" />,
+  light: <Sun className="size-3.5" />,
+  dark: <Moon className="size-3.5" />,
   system: <Monitor className="size-3.5" />,
-} as const
+} as const;
 
-type Theme = keyof typeof THEME_ICONS
+type Theme = keyof typeof THEME_ICONS;
 
 export function Header() {
-  const dispatch = useAppDispatch()
-  const theme = useAppSelector(s => s.ui.theme)
-  const user = useAppSelector(s => s.auth.user)
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector((s) => s.ui.theme);
+  const user = useAppSelector((s) => s.auth.user);
 
   const cycleTheme = () => {
-    const order: Theme[] = ["light", "dark", "system"]
-    const next = order[(order.indexOf(theme as Theme) + 1) % order.length]
-    dispatch(setTheme(next))
-  }
+    const order: Theme[] = ["light", "dark", "system"];
+    const next = order[(order.indexOf(theme as Theme) + 1) % order.length];
+    dispatch(setTheme(next));
+  };
 
   return (
     <header className="flex h-12 shrink-0 items-center gap-3 border-b border-border bg-background px-4">
@@ -36,7 +36,7 @@ export function Header() {
           className={cn(
             "flex h-8 items-center gap-2 rounded-lg border border-border bg-muted/50",
             "px-3 text-sm text-muted-foreground transition-colors hover:bg-muted",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           )}
           aria-label="Search"
         >
@@ -73,10 +73,10 @@ export function Header() {
           title={user?.name}
         >
           <span className="text-[11px] font-semibold">
-            {user ? getInitials(user.name) : "?"}
+            {user ? getInitials(user.fullName) : "?"}
           </span>
         </button>
       </div>
     </header>
-  )
+  );
 }

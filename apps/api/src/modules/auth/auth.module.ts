@@ -20,6 +20,7 @@ import { UsersModule } from "../users/users.module";
 import { INJECTION_TOKENS } from "../../core/constants/injection-tokens";
 import { ConfigService } from "@nestjs/config";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
+import { GetCurrentUserUseCase } from "./application/use-cases/get-current-user.use-case";
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { LoginUseCase } from "./application/use-cases/login.use-case";
   providers: [
     RegisterUseCase,
     LoginUseCase,
+    GetCurrentUserUseCase,
     JwtStrategy,
 
     {
