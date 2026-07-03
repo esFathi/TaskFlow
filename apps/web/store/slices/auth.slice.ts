@@ -50,6 +50,28 @@ export const register = createAsyncThunk(
   },
 );
 
+import { loginUser } from "@/lib/api/auth.api";
+
+export const login = createAsyncThunk(
+  "auth/login",
+
+  async (
+    data: {
+      email: string;
+      password: string;
+    },
+    { rejectWithValue },
+  ) => {
+    try {
+      return await loginUser(data);
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message ?? "Login Invalid email or password.",
+      );
+    }
+  },
+);
+
 const authSlice = createSlice({
   name: "auth",
 
@@ -84,6 +106,25 @@ const authSlice = createSlice({
       })
 
       .addCase(register.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.payload as string;
+      })
+
+      .addCase(login.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(login.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.user = action.payload.user;
+
+        state.token = action.payload.accessToken;
+      })
+
+      .addCase(login.rejected, (state, action) => {
         state.loading = false;
 
         state.error = action.payload as string;

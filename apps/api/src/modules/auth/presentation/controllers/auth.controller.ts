@@ -1,42 +1,32 @@
 // HTTP controller for auth: register, login, refresh, and logout endpoints.
 
-import {
- Body,
- Controller,
- HttpCode,
- HttpStatus,
- Post
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 
-import { RegisterDto }
-from '../../application/dtos/register.dto';
+import { RegisterDto } from "../../application/dtos/register.dto";
 
-import { RegisterUseCase }
-from '../../application/use-cases/register.use-case';
+import { RegisterUseCase } from "../../application/use-cases/register.use-case";
+import { LoginDto } from "../../application/dtos/login.dto";
+import { LoginUseCase } from "../../application/use-cases/login.use-case";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
+  constructor(
+    private readonly registerUseCase: RegisterUseCase,
+    private readonly loginUseCase: LoginUseCase,
+  ) {}
 
- constructor(
+  @Post("register")
+  @HttpCode(HttpStatus.CREATED)
+  async register(
+    @Body()
+    dto: RegisterDto,
+  ) {
+    return this.registerUseCase.execute(dto);
+  }
 
-   private readonly registerUseCase:
-   RegisterUseCase
-
- ){}
-
- @Post('register')
- @HttpCode(HttpStatus.CREATED)
- async register(
-
-   @Body()
-   dto:RegisterDto
-
- ){
-
-   return this.registerUseCase.execute(
-      dto
-   );
-
- }
-
+  @Post("login")
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() dto: LoginDto) {
+    return this.loginUseCase.execute(dto);
+  }
 }

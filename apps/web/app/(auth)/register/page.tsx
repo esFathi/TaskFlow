@@ -54,13 +54,7 @@ export default function RegisterPage() {
       );
 
       if (registerUserAction.fulfilled.match(result)) {
-        document.cookie = `
-        taskflow-token=${result.payload.accessToken};
-        path=/;
-        max-age=86400;
-        SameSite=Lax
-      `;
-
+        document.cookie = `taskflow-token=${result.payload.accessToken}; path=/; max-age=86400; SameSite=Lax`;
         router.push("/dashboard");
       }
     } catch (error) {
