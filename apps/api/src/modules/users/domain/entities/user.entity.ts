@@ -2,11 +2,11 @@
 // Pure business object holding state + invariants and behavior.
 // No framework, ORM, or HTTP concerns here.
 
-import { v7 as uuid } from 'uuid';
+import { v7 as uuid } from "uuid";
 
 export enum UserRole {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
+  USER = "USER",
+  ADMIN = "ADMIN",
 }
 
 interface CreateUserProps {
@@ -84,7 +84,7 @@ export class User {
   }
 
   get fullName() {
-    return this._fullName
+    return this._fullName;
   }
 
   get passwordHash() {
@@ -100,10 +100,10 @@ export class User {
   }
 
   get createdAt() {
-    return this._createdAt
+    return this._createdAt;
   }
 
   get updatedAt() {
-    return this._updatedAt
+    return this._updatedAt;
   }
 }
