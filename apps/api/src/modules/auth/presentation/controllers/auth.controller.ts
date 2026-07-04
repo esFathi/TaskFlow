@@ -25,6 +25,7 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly loginUseCase: LoginUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
+    private readonly logoutUseCase: LoginUseCase,
   ) {}
 
   @Post("register")
@@ -46,5 +47,13 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async me(@CurrentUser() user: any) {
     return this.getCurrentUserUseCase.execute(user);
+  }
+
+  @Post("logout")
+  async logout(
+    @CurrentUser()
+    user: any,
+  ) {
+    return this.logoutUseCase.execute(user.id);
   }
 }

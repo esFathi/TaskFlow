@@ -21,6 +21,7 @@ import { INJECTION_TOKENS } from "../../core/constants/injection-tokens";
 import { ConfigService } from "@nestjs/config";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
 import { GetCurrentUserUseCase } from "./application/use-cases/get-current-user.use-case";
+import { LogoutUseCase } from "./application/use-cases/logout";
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { GetCurrentUserUseCase } from "./application/use-cases/get-current-user.
     RegisterUseCase,
     LoginUseCase,
     GetCurrentUserUseCase,
+    LogoutUseCase,
     JwtStrategy,
 
     {
