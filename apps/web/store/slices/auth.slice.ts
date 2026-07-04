@@ -4,7 +4,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 
-import { registerUser } from "@/lib/api/auth.api";
+import { registerUser, loginUser, getCurrentUser } from "@/lib/api/auth.api";
 
 interface AuthUser {
   id: string;
@@ -50,8 +50,6 @@ export const register = createAsyncThunk(
   },
 );
 
-import { loginUser } from "@/lib/api/auth.api";
-
 export const login = createAsyncThunk(
   "auth/login",
 
@@ -67,6 +65,20 @@ export const login = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message ?? "Login Invalid email or password.",
+      );
+    }
+  },
+);
+
+export const getMe = createAsyncThunk(
+  "auth/me",
+
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getCurrentUser();
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message ?? "Failed to load user",
       );
     }
   },
@@ -128,6 +140,22 @@ const authSlice = createSlice({
         state.loading = false;
 
         state.error = action.payload as string;
+      })
+
+      .addCase(getMe.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(getMe.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.user = action.payload;
+      })
+
+      .addCase(getMe.rejected, (state) => {
+        state.loading = false;
+
+        state.user = null;
       });
   },
 });
@@ -136,11 +164,15 @@ export const { setUser, clearUser } = authSlice.actions;
 
 export default authSlice.reducer;
 
-export function getInitials(name: string): string {
+export function getInitials(name?: string | null): string {
+  if (!name?.trim()) {
+    return "?";
+  }
+
   return name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map((w) => w[0].toUpperCase())
+    .map((word) => word[0]?.toUpperCase() ?? "")
     .join("");
 }
