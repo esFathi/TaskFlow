@@ -1,24 +1,24 @@
-import { MoreHorizontal, ClipboardList, FolderOpen } from "lucide-react"
+import { MoreHorizontal, ClipboardList, FolderOpen } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { ROLE } from "@/lib/design-tokens"
-import { getInitials } from "@/store/slices/auth.slice"
-import type { TeamMember, MemberStatus } from "@/lib/mock/team"
-import type { UserRole } from "@/types/user"
+import { cn } from "@/lib/utils";
+import { ROLE } from "@/lib/design-tokens";
+import { getInitials } from "@/store/slices/auth.slice";
+import type { TeamMember, MemberStatus } from "@/lib/mock/team";
+import type { UserRole } from "@/types/user";
 
 // ─── StatusDot ────────────────────────────────────────────────────────────────
 
 const STATUS_DOT: Record<MemberStatus, string> = {
-  active:   "bg-green-500",
+  active: "bg-green-500",
   inactive: "bg-zinc-400",
-  invited:  "bg-yellow-500",
-}
+  invited: "bg-yellow-500",
+};
 
 const STATUS_LABEL: Record<MemberStatus, string> = {
-  active:   "Active",
+  active: "Active",
   inactive: "Inactive",
-  invited:  "Invited",
-}
+  invited: "Invited",
+};
 
 // ─── MemberAvatar ─────────────────────────────────────────────────────────────
 
@@ -36,18 +36,20 @@ function MemberAvatar({ member }: { member: TeamMember }) {
         title={STATUS_LABEL[member.status]}
       />
     </div>
-  )
+  );
 }
 
 // ─── ProjectTags ──────────────────────────────────────────────────────────────
 
 function ProjectTags({ projects }: { projects: TeamMember["projects"] }) {
-  const MAX = 2
-  const visible = projects.slice(0, MAX)
-  const extra = projects.length - MAX
+  const MAX = 2;
+  const visible = projects.slice(0, MAX);
+  const extra = projects.length - MAX;
 
   if (projects.length === 0) {
-    return <span className="text-xs text-muted-foreground/50">No projects yet</span>
+    return (
+      <span className="text-xs text-muted-foreground/50">No projects yet</span>
+    );
   }
 
   return (
@@ -66,24 +68,26 @@ function ProjectTags({ projects }: { projects: TeamMember["projects"] }) {
         </span>
       )}
     </div>
-  )
+  );
 }
 
 // ─── TeamMemberCard ───────────────────────────────────────────────────────────
 
 interface TeamMemberCardProps {
-  member: TeamMember
+  member: TeamMember;
 }
 
 export function TeamMemberCard({ member }: TeamMemberCardProps) {
-  const roleToken = ROLE[member.role as UserRole]
-  const isInvited = member.status === "invited"
+  const roleToken = ROLE[member.role as UserRole];
+  const isInvited = member.status === "invited";
 
   return (
-    <article className={cn(
-      "group flex flex-col gap-4 rounded-xl border border-border bg-surface-0 p-5 shadow-xs transition-colors hover:border-primary/30",
-      isInvited && "opacity-70",
-    )}>
+    <article
+      className={cn(
+        "group flex flex-col gap-4 rounded-xl border border-border bg-surface-0 p-5 shadow-xs transition-colors hover:border-primary/30",
+        isInvited && "opacity-70",
+      )}
+    >
       {/* Header */}
       <div className="flex items-start justify-between">
         <MemberAvatar member={member} />
@@ -130,5 +134,5 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
         </span>
       </div>
     </article>
-  )
+  );
 }
