@@ -2,24 +2,18 @@
 // Implemented in the infrastructure layer.
 
 export interface TokenPayload {
-
- sub:string;
- email:string;
- role:string;
-
+  sub: string;
+  email: string;
+  role: string;
 }
 
 export interface AuthTokens {
-
- accessToken:string;
- refreshToken:string;
-
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface TokenServicePort{
+export interface TokenServicePort {
+  generateTokens(payload: TokenPayload): Promise<AuthTokens>;
 
- generateTokens(
-   payload:TokenPayload
- ):Promise<AuthTokens>;
-
+  verifyRefreshToken(token: string): Promise<any>;
 }

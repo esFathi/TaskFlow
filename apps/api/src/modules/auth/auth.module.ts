@@ -22,6 +22,7 @@ import { ConfigService } from "@nestjs/config";
 import { LoginUseCase } from "./application/use-cases/login.use-case";
 import { GetCurrentUserUseCase } from "./application/use-cases/get-current-user.use-case";
 import { LogoutUseCase } from "./application/use-cases/logout";
+import { RefreshTokenUseCase } from "./application/use-cases/refresh-token.use-case";
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { LogoutUseCase } from "./application/use-cases/logout";
     RegisterUseCase,
     LoginUseCase,
     GetCurrentUserUseCase,
+    RefreshTokenUseCase,
     LogoutUseCase,
     JwtStrategy,
 

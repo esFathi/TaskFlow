@@ -1,62 +1,47 @@
 // Infrastructure implementation of the token-service port (sign/verify JWTs).
 
+import { Injectable } from "@nestjs/common";
+import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import {
- Injectable
-} from '@nestjs/common';
-import {
- JwtService
-} from '@nestjs/jwt';
-import {
- TokenPayload,
- AuthTokens,
- TokenServicePort
-}
-from '../../application/ports/token-service.port';
+  TokenPayload,
+  AuthTokens,
+  TokenServicePort,
+} from "../../application/ports/token-service.port";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
-export class JwtTokenService
-implements TokenServicePort {
+export class JwtTokenService implements TokenServicePort {
+  constructor(
+    private readonly jwt: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
- constructor(
+  async generateTokens(payload: TokenPayload): Promise<AuthTokens> {
+    const accessToken = await this.jwt.signAsync(payload, {
+      secret: this.configService.getOrThrow<string>("accessToken.secret"),
 
- private readonly jwt:
- JwtService
+      expiresIn: this.configService.getOrThrow(
+        "accessToken.expiresIn",
+      ) as JwtSignOptions["expiresIn"],
+    });
 
- ){}
+    const refreshToken = await this.jwt.signAsync(payload, {
+      secret: this.configService.getOrThrow<string>("refreshToken.secret"),
 
- async generateTokens(
-   payload:TokenPayload
- ):Promise<AuthTokens>{
+      expiresIn: this.configService.getOrThrow(
+        "refreshToken.expiresIn",
+      ) as JwtSignOptions["expiresIn"],
+    });
 
-   const accessToken=
-   await this.jwt.signAsync(
-
-      payload,
-
-      {
-        expiresIn:'15m'
-      }
-
-   );
-
-   const refreshToken=
-   await this.jwt.signAsync(
-
-      payload,
-
-      {
-         expiresIn:'7d'
-      }
-
-   );
-
-   return {
-
+    return {
       accessToken,
-      refreshToken
+      refreshToken,
+    };
+  }
 
-   };
-
- }
-
+  async verifyRefreshToken(token: string): Promise<TokenPayload> {
+    return this.jwt.verifyAsync(token, {
+      secret: this.configService.getOrThrow<string>("refreshToken.secret"),
+    });
+  }
 }

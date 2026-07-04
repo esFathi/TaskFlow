@@ -18,6 +18,8 @@ import { LoginUseCase } from "../../application/use-cases/login.use-case";
 import { GetCurrentUserUseCase } from "../../application/use-cases/get-current-user.use-case";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { CurrentUser } from "@/core/decorators/current-user.decorator";
+import { RefreshTokenUseCase } from "../../application/use-cases/refresh-token.use-case";
+import { RefreshTokenDto } from "../../application/dtos/refresh-token.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -26,6 +28,7 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
     private readonly logoutUseCase: LoginUseCase,
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
   ) {}
 
   @Post("register")
@@ -55,5 +58,14 @@ export class AuthController {
     user: any,
   ) {
     return this.logoutUseCase.execute(user.id);
+  }
+
+  @Post("refresh")
+  @HttpCode(HttpStatus.OK)
+  async refresh(
+    @Body()
+    dto: RefreshTokenDto,
+  ) {
+    return this.refreshTokenUseCase.execute(dto);
   }
 }
